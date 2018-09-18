@@ -1,0 +1,58 @@
+<!DOCTYPE html >
+<html> 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"> 
+<title>手写签字</title> 
+ <style>
+ button {
+    color: #ca0c16 !important;
+    border: 1px solid #ca0c16 !important;
+    background-color: #fff !important;
+    -webkit-transition: background-color .1s ease-in-out;
+    transition: background-color .1s ease-in-out;
+    border-radius: 100px;
+    width: 45%;    
+ }
+ button:hover{
+    background-color: #fde3e4 !important;
+    border-color: #ca0c16 !important;
+ }
+ </style>
+<script type="text/javascript" src="js/jquery.min.js"></script>    
+<script type="text/javascript" src="js/flashcanvas.js"></script>
+<script src="js/jSignature.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        //初始化插件
+        var dHeight = "300px";
+		var dWidth = document.body.scrollWidth ; 
+ 
+		$("#signature").jSignature({height:dHeight,width:dWidth, signatureLine:false, "decor-color": "transparent",});//初始化调整手写屏大小
+ 
+    })
+ 
+    //输出签名图片
+    function jSignatureTest(){ 
+        var $sigdiv = $("#signature");
+        var datapair = $sigdiv.jSignature("getData", "svgbase64") 
+        console.log(datapair);
+        var i = new Image();
+        i.src = "data:" + datapair[0] + "," + datapair[1] 
+        $(i).appendTo($("#image")) // append the image (SVG) to DOM.
+    }
+ 
+    function reset(){
+        var $sigdiv = $("#signature");
+        $sigdiv.jSignature("reset");
+		$("#image img").remove();
+    }
+</script>
+</head>
+<body>
+<div id="signature" style="width: 100%;height: 300px;border: 1px solid #ccc;margin: 10px 0px;"></div>
+<button type="button" onclick="jSignatureTest()">提交签名</button>
+<button type="button" onclick="reset()">重新签名</button>
+<div id="image" style="margin:20px"></div>
+</body>
+</html>
