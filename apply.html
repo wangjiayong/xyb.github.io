@@ -52,16 +52,8 @@
             } else {
              $('.derror').text('电话号码不正确')
             }
-        }) 
-        $(".dinp").on('blur',function(e){
-            var b = /^0?(13|14|15|18|17)[0-9]{9}$/
-            if(b.test(e.currentTarget.value)){
-                $('.derror').text('')
-            } else {
-             $('.derror').text('电话号码不正确')
-            }
         })
-        $('#sign').click(function(){
+        $('#sign').on('click',function(){
                 if ($(".sinp").val()&&$('.serror').text()) {
                 alert('请输入正确的身份证号')
                 return            
@@ -80,7 +72,7 @@
             var datapair = $sigdiv.jSignature("getData") 
                 $.ajax({
                 type: 'post',
-                url: 'http://testcreditloan.xyb100.com/pdfbuilder/pdf/createPdf',
+                url: 'http://testcreditloan.xyb100.com/pdfbuilder/pdfbuilder/pdf/createPdf',
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify({ 
@@ -94,7 +86,7 @@
                     alert('请愿成功')
                     location.href='index.html'
                 }
-                }
+             }
             })
           })
     })
