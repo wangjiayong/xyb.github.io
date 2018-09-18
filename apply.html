@@ -55,13 +55,16 @@
              $('.derror').text('电话号码不正确')
             }
         }) 
-    })
- 
-    //输出签名图片
-    function jSignatureTest(){ 
-        console.log($('.serror').text(),$('.derror').text())
-        console.log($('.sinp').val(),$('.dinp').val())
-        if ($(".sinp").val()&&$('.serror').text()) {
+        $(".dinp").on('blur',function(e){
+            var b = /^0?(13|14|15|18|17)[0-9]{9}$/
+            if(b.test(e.currentTarget.value)){
+                $('.derror').text('')
+            } else {
+             $('.derror').text('电话号码不正确')
+            }
+        })
+        $('#sign').click(function(){
+            if ($(".sinp").val()&&$('.serror').text()) {
             alert('请输入正确的身份证号')
             return            
         } else if (!$(".sinp").val()) {
@@ -76,30 +79,26 @@
             return 
         }
         var $sigdiv = $("#signature");
-        // var datapair = $sigdiv.jSignature("getData", "svgbase64") 
         var datapair = $sigdiv.jSignature("getData") 
-        console.log(datapair);
-        // var i = new Image();
-        // i.src = "data:" + datapair[0] + "," + datapair[1] 
-        // i.src =datapair
-        // $(i).appendTo($("#image")) // append the image (SVG) to DOM.
             $.ajax({
             type: 'post',
-            url: '../MyBalance/setShare',
+            url: 'http://39.104.168.243:8090/pdfbuilder/pdfbuilder/pdf/createPdf',
+            contentType: 'application/json',
             dataType: 'json',
-            data: { 
-                imgFile : datapair,
-                userId: $(".sinp").val(),
-                userId: $(".dinp").val()
-            },
+            data: JSON.stringify({ 
+                imageFile: datapair,
+                idCard: $(".sinp").val(),
+                phone: $(".dinp").val()
+            }),
             success: function (res) {
               // 成功后的回调
-              if (res.result===0) {
+              if (res.result === 0) {
                 location.href='index.html'
               }
             }
         })
-    }
+          })
+    })
  
     function reset(){
         var $sigdiv = $("#signature");
@@ -120,7 +119,7 @@
     <div class="derror"></div>    
 </div>
 <div id="signature" style="width: 100%;height: 300px;border: 1px solid #ccc;margin: 10px 0px;"></div>
-<button type="button" onclick="jSignatureTest()">提交签名</button>
+<button type="button" id='sign'>提交签名</button>
 <button type="button" onclick="reset()">重新签名</button>
 <div id="image" style="margin:20px"></div>
 </body>
