@@ -64,21 +64,22 @@
             }
         })
         $('#sign').click(function(){
-            alert(0)
-            if ($(".sinp").val()&&$('.serror').text()) {
-            alert('请输入正确的身份证号')
-            return            
-        } else if (!$(".sinp").val()) {
-            alert('身份证号不能为空')
-            return 
-        }
-        if ($(".dinp").val()&&$('.derror').text()) {
-            alert('请输入正确的电话号码')
-            return
-        } else if (!$(".dinp").val()) {
-            alert('电话号码不能为空')
-            return 
-        }
+        //     alert(0)
+        //     if ($(".sinp").val()&&$('.serror').text()) {
+        //     alert('请输入正确的身份证号')
+        //     return            
+        // } else if (!$(".sinp").val()) {
+        //     alert('身份证号不能为空')
+        //     return 
+        // }
+        // if ($(".dinp").val()&&$('.derror').text()) {
+        //     alert('请输入正确的电话号码')
+        //     return
+        // } else if (!$(".dinp").val()) {
+        //     alert('电话号码不能为空')
+        //     return 
+        // }
+        alert(0)
         var $sigdiv = $("#signature");
         var datapair = $sigdiv.jSignature("getData") 
             $.ajax({
