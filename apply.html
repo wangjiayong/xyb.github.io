@@ -30,6 +30,7 @@
 <script type="text/javascript" src="js/jquery.min.js"></script>    
 <script type="text/javascript" src="js/flashcanvas.js"></script>
 <script src="js/jSignature.min.js"></script>
+<script src="js/idCard.js"></script>
 <script type="text/javascript">
     $(function(){
         //初始化插件
@@ -38,11 +39,12 @@
  
 		$("#signature").jSignature({height:dHeight,width:dWidth, signatureLine:false, "decor-color": "transparent",});//初始化调整手写屏大小
         $(".sinp").on('blur',function(e){
-            var b = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
-            if(b.test(e.currentTarget.value)){
+            // var b = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
+            var b = getInfo(e.currentTarget.value) 
+            if(typeof b  === "object"){
                 $('.serror').text('')
             } else {
-             $('.serror').text('身份证号码不合法')
+             $('.serror').text(b)
             }
         })
         $(".dinp").on('blur',function(e){

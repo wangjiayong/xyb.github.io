@@ -4,24 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./image/favicon.ico"/>
+    <style>
+     #btn .form-group{
+      vertical-align: bottom;
+    }
+    </style>
+    <title>信用宝用户请愿书下载</title> 
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="css/qunit-1.11.0.css">
+<link rel="stylesheet" href="css/bootstrapv3.css">
+<script type="text/javascript" src="js/jquery.min.js"></script>    
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-paginator.js"></script>
+<script src="js/qunit-1.11.0.js"></script>
+<script type="text/javascript" src="js/template-web.js"></script>    
+<script type="text/javascript" src="js/date.js"></script>    
+<script type="text/tmpl" id="tmpl">
+  <% for(var i=0;i<arr.length;i++){%>
+  <tr>
+  <td>
+  <%= arr[i].phone%>
+  </td>
+  <td>
+  <%= arr[i].idCard%>
+  </td>
+  <td>
+  <%= arr[i].createDate%>
+  </td>
+  <td>
+      <a type="button" class="btn btn-info down" href='http://<%= arr[i].petitionUrl%>'>下载</a>
+  </td>
+  </tr>
+  <% } %>
+  </script>
 </head>
 <body>
     <div class="container">
-            <form class="form-inline" style="margin-bottom:10px;">
+            <form id='btn' class="form-inline" style="margin-bottom:10px;">
                     <div class="form-group">
                       <label for="exampleInputName2">开始时间</label>
-                      <input type="text" class="form-control" id="exampleInputName2" placeholder="开始时间">
+                      <input type="date" class="form-control" id="exampleInputName1" placeholder="开始时间">
                     </div>
                     <div class="form-group">
                       <label for="exampleInputEmail2">结束时间</label>
-                      <input type="email" class="form-control" id="exampleInputEmail2" placeholder="结束时间">
+                      <input type="date" class="form-control" id="exampleInputEmail2" placeholder="结束时间">
                     </div>
-                    <button type="submit" class="btn btn-default">查询</button>
+                   <div class="form-group">
+                      <button type="submit" class="btn btn-default" id='search'>查询</button>
+                      <button type="submit" class="btn btn-default" id='batchDownload'>批量下载</button>
+                   </div>
                   </form>
                   <table class="table table-bordered">
                         <thead>
@@ -32,22 +64,124 @@
                             <th>下载</th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody">
                           <tr>
                             <td>Table cell</td>
                             <td>Table cell</td>
                             <td>Table cell</td>
-                            <td center><button type="button" class="btn btn-info">下载</button></td>
+                            <td><button type="button" class="btn btn-info">下载</button></td>
                           </tr>
-                          <tr>
-                                <td>Table cell</td>
-                                <td>Table cell</td>
-                                <td>Table cell</td>
-                                <td><button type="button" class="btn btn-info">下载</button></td>
-                              </tr>
                         </tbody>
                       </table>
+                      <ul id='bp-3-element-test'></ul>                      
+                        
         </div> 
+        <script>
+          var pageNumber=1,pageSize=20
+        $(function(){
+         function getListData(){   
+          $.ajax({
+                type: 'post',
+                url: `http://192.168.1.58:8080/pdfbuilder/pdfbuilder/pdf/getPdfPage/${pageNumber}/${pageSize}`,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({ 
+                    startTime: obj.getLastTimeStrMs($("#exampleInputName1").val()),
+                    endTime: obj.getLastTimeStrMs($("#exampleInputEmail2").val())
+                }),
+                success: function (res) {
+                    // 成功后的回调
+                if (res.result === 0) {
+                  $("#tbody").html(template("tmpl", {
+                    arr: res.data.contents
+                  }))
+                }
+                var element = $('#bp-3-element-test');
+                var options = {
+                bootstrapMajorVersion:3,
+                currentPage: res.data.pageNumber,//当前页
+                numberOfPages: 5,//每次展示多少页
+                totalPages:Math.ceil(res.data.total/20),//总页数
+                size:'small',//大小
+                alignment:'right',//位置
+                pageUrl: function(type, page, current){//访问连接
+          // 当前页current
+	               		 return "#"+page;
+	            	},
+	            itemTexts: function (type, page, current) { //样式文字设置
+                    switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "前一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "最后";
+                    case "page":
+                        return ""+page;
+                    }
+                },
+                shouldShowPage:function(type, page, current){//控制哪些显示，哪些隐藏
+		                switch(type)
+		                {
+		                    case "first":
+		                    case "last":
+		                        return false;  //首页最后一页隐藏
+		                    default:
+		                        return true;  //其他显示
+		                }
+           		 },
+           		 tooltipTitles: function (type, page, current) { //提示框，当鼠标放上去给提示
+	                    switch (type) {
+	                    case "first":
+	                        return "提示首页";
+	                    case "prev":
+	                        return "上一页";
+	                    case "next":
+	                        return "下一页";
+	                    case "last":
+	                        return "最后一页";
+	                 
+	                    }
+	                },
+	            useBootstrapTooltip:true,
+	            
+	            onPageClicked: function(e,originalEvent,type,page){
+                pageNumber = page
+                getListData()
+                // $('#alert-content').text("点击页数时，触发该函数, type: "+type+" page: "+page);
+            	},
+            	
+            	onPageChanged: function(e,oldPage,newPage){
+                // $('#alert-content').text("当页面改变时，触发该函数, old: "+oldPage+" new: "+newPage);
+             }
+            }
+            element.bootstrapPaginator(options);
+             }
+          })
+          }
+          getListData()
+          $('#search').on('click',function(){
+            getListData()
+          })
+          $('#batchDownload').on('click',function(){
+            $.ajax({
+              type: 'post',
+                url: `http://192.168.1.58:8080/pdfbuilder/pdfbuilder/pdf/petitionSign`,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({ 
+                    startTime: obj.getLastTimeStrMs($("#exampleInputName1").val()),
+                    endTime: obj.getLastTimeStrMs($("#exampleInputEmail2").val())
+                }),
+                success:function(res){
+                  window.location.href = 'http://' + res.data.errmessage
+                }
+            })
+          })
+        })
+        </script>
        
 </body>
 </html>
