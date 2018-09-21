@@ -51,8 +51,8 @@
                       <input type="date" class="form-control" id="exampleInputEmail2" placeholder="结束时间">
                     </div>
                    <div class="form-group">
-                      <button type="submit" class="btn btn-default" id='search'>查询</button>
-                      <button type="submit" class="btn btn-default" id='batchDownload'>批量下载</button>
+                      <button type="button" class="btn btn-default" id='search'>查询</button>
+                      <button type="button" class="btn btn-primary" id='batchDownload' data-loading-text="加载中..." >批量下载</button>
                    </div>
                   </form>
                   <table class="table table-bordered">
@@ -122,16 +122,16 @@
                         return ""+page;
                     }
                 },
-                shouldShowPage:function(type, page, current){//控制哪些显示，哪些隐藏
-		                switch(type)
-		                {
-		                    case "first":
-		                    case "last":
-		                        return false;  //首页最后一页隐藏
-		                    default:
-		                        return true;  //其他显示
-		                }
-           		 },
+              //   shouldShowPage:function(type, page, current){//控制哪些显示，哪些隐藏
+		          //       switch(type)
+		          //       {
+		          //           case "first":
+		          //           case "last":
+		          //               return false;  //首页最后一页隐藏
+		          //           default:
+		          //               return true;  //其他显示
+		          //       }
+           		//  },
            		 tooltipTitles: function (type, page, current) { //提示框，当鼠标放上去给提示
 	                    switch (type) {
 	                    case "first":
@@ -166,6 +166,8 @@
             getListData()
           })
           $('#batchDownload').on('click',function(){
+            $(this).button('loading').delay(4000).queue(function() {
+			});
             $.ajax({
               type: 'post',
                 url: `http://192.168.1.58:8080/pdfbuilder/pdfbuilder/pdf/petitionSign`,
@@ -175,7 +177,8 @@
                     startTime: obj.getLastTimeStrMs($("#exampleInputName1").val()),
                     endTime: obj.getLastTimeStrMs($("#exampleInputEmail2").val())
                 }),
-                success:function(res){
+                success:(res)=>{
+                    $(this).button('reset'); 
                   window.location.href = 'http://' + res.data.errmessage
                 }
             })
